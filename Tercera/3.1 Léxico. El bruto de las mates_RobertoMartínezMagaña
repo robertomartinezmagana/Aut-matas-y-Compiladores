@@ -1,72 +1,49 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
-/* Variables globales para contar */
-int line_count = 1;
-int word_count = 1;
-int char_count = 1;
-int ni_count = 1;
-int num_count = 1;
-int b_to_count = 1;
-int jo_count = 1;
-int digit_count = 1;
+int lineas = 0;
+int palabras = 0;
+int caracteres = 0;
+int ni_palabras = 0;
+int num_palabras = 0;
+int b_to_palabras = 0;
+int jo_palabras = 0;
+int digitos = 0;
 %}
 
-%option noyywrap
-
-WORD    [a-zA-ZáéíóúÁÉÍÓÚñÑ]+
-DIGIT   [0-9]
-
 %%
-\n      { line_count++; char_count++; }
-[ \t]+  { char_count += yyleng; }
-{DIGIT} { digit_count++; char_count++; }
-{WORD}  {
-    word_count++;
-    char_count += yyleng;
-    
-    /* Convertir a minúsculas */
-    char lower[100];
-    int i; /* Declaración movida fuera del for */
-    strcpy(lower, yytext);
-    for(i = 0; lower[i]; i++) {
-        lower[i] = tolower(lower[i]);
-    }
-    
-    int len = strlen(lower);
-    
-    /* Condiciones de búsqueda */
-    if (strncmp(lower, "ni", 2) == 0) ni_count++;
-    if (strncmp(lower, "num", 3) == 0) num_count++;
-    if (len >= 4 && lower[0] == 'b' && strcmp(lower + len - 2, "to") == 0) b_to_count++;
-    if (len >= 2 && strcmp(lower + len - 2, "jo") == 0) jo_count++;
-}
-.       { char_count++; }
+\n { lineas++; caracteres++; }
+[ \t]+ { caracteres += yyleng; }
+[0-9]+ { digitos++; palabras++; caracteres += yyleng; }
+"ni"[a-zA-Záéíóúñ]* { ni_palabras++; palabras++; caracteres += yyleng; }
+"núm"[a-zA-Záéíóúñ]* { num_palabras++; palabras++; caracteres += yyleng; }
+"b"[a-zA-Záéíóúñ]*"to" { b_to_palabras++; palabras++; caracteres += yyleng; }
+[a-zA-Záéíóúñ]+"jo" { jo_palabras++; palabras++; caracteres += yyleng; }
+[a-zA-Záéíóúñ]+ { palabras++; caracteres += yyleng; }
+. { caracteres++; }
 %%
 
-int main(int argc, char *argv[]) {
-    yyin = argc > 1 ? fopen(argv[1], "r") : stdin;
-    if (!yyin) {
-        fprintf(stderr, "Error al abrir el archivo %s\n", argv[1]);
-        return 1;
-    }
+int main() {
+    printf("\n--- Analizador de Texto ---\n");
+    printf("Pega tu texto y presiona Ctrl+D (Linux/Mac) o Ctrl+Z (Windows) para finalizar:\n\n");
     
-    yylex();
+    yylex();  // Procesa la entrada
     
-    /* Mostrar resultados */
-    printf("\n=== RESULTADOS ===\n");
-    printf("Líneas: %d\n", line_count);
-    printf("Palabras: %d\n", word_count);
-    printf("Caracteres: %d\n", char_count);
-    printf("\n--- Palabras especiales ---\n");
-    printf("Inician con 'ni': %d\n", ni_count);
-    printf("Inician con 'num': %d\n", num_count);
-    printf("Inician con 'b' y terminan con 'to': %d\n", b_to_count);
-    printf("Terminan con 'jo': %d\n", jo_count);
-    printf("\nDígitos numéricos: %d\n", digit_count);
+    printf("\n--- Resultados ---\n");
+    printf("Total de líneas: %d\n", lineas);
+    printf("Total de palabras: %d\n", palabras);
+    printf("Total de caracteres: %d\n", caracteres);
+    printf("\nPalabras que:\n");
+    printf("- Inician con 'ni': %d\n", ni_palabras);
+    printf("- Inician con 'núm': %d\n", num_palabras);
+    printf("- Inician con 'b' y terminan con 'to': %d\n", b_to_palabras);
+    printf("- Terminan con 'jo': %d\n", jo_palabras);
+    printf("- Son dígitos: %d\n", digitos);
     
-    if (yyin != stdin) fclose(yyin);
     return 0;
+}
+
+int yywrap() {
+    return 1;
 }
