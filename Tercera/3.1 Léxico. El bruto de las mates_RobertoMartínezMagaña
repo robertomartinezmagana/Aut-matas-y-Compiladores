@@ -1,0 +1,72 @@
+%{
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+/* Variables globales para contar */
+int line_count = 1;
+int word_count = 1;
+int char_count = 1;
+int ni_count = 1;
+int num_count = 1;
+int b_to_count = 1;
+int jo_count = 1;
+int digit_count = 1;
+%}
+
+%option noyywrap
+
+WORD    [a-zA-ZáéíóúÁÉÍÓÚñÑ]+
+DIGIT   [0-9]
+
+%%
+\n      { line_count++; char_count++; }
+[ \t]+  { char_count += yyleng; }
+{DIGIT} { digit_count++; char_count++; }
+{WORD}  {
+    word_count++;
+    char_count += yyleng;
+    
+    /* Convertir a minúsculas */
+    char lower[100];
+    int i; /* Declaración movida fuera del for */
+    strcpy(lower, yytext);
+    for(i = 0; lower[i]; i++) {
+        lower[i] = tolower(lower[i]);
+    }
+    
+    int len = strlen(lower);
+    
+    /* Condiciones de búsqueda */
+    if (strncmp(lower, "ni", 2) == 0) ni_count++;
+    if (strncmp(lower, "num", 3) == 0) num_count++;
+    if (len >= 4 && lower[0] == 'b' && strcmp(lower + len - 2, "to") == 0) b_to_count++;
+    if (len >= 2 && strcmp(lower + len - 2, "jo") == 0) jo_count++;
+}
+.       { char_count++; }
+%%
+
+int main(int argc, char *argv[]) {
+    yyin = argc > 1 ? fopen(argv[1], "r") : stdin;
+    if (!yyin) {
+        fprintf(stderr, "Error al abrir el archivo %s\n", argv[1]);
+        return 1;
+    }
+    
+    yylex();
+    
+    /* Mostrar resultados */
+    printf("\n=== RESULTADOS ===\n");
+    printf("Líneas: %d\n", line_count);
+    printf("Palabras: %d\n", word_count);
+    printf("Caracteres: %d\n", char_count);
+    printf("\n--- Palabras especiales ---\n");
+    printf("Inician con 'ni': %d\n", ni_count);
+    printf("Inician con 'num': %d\n", num_count);
+    printf("Inician con 'b' y terminan con 'to': %d\n", b_to_count);
+    printf("Terminan con 'jo': %d\n", jo_count);
+    printf("\nDígitos numéricos: %d\n", digit_count);
+    
+    if (yyin != stdin) fclose(yyin);
+    return 0;
+}
