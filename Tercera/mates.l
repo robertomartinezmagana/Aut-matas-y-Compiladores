@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-/* Variables globales para los contadores */
 int num_lineas = 0;
 int num_palabras = 0;
 int num_caracteres = 0;
@@ -14,7 +13,6 @@ int palabras_b_to = 0;
 int palabras_con_jo = 0;
 int num_digitos = 0;
 
-/* Función para verificar prefijos y sufijos */
 void verificar_palabra(char *palabra);
 %}
 
@@ -38,7 +36,7 @@ SALTO_LINEA  \n
 
 void verificar_palabra(char *palabra) {
     int longitud = strlen(palabra);
-    int i;  /* Declaración movida fuera del for para compatibilidad */
+    int i;  
     char *palabra_min = (char *)malloc(longitud + 1);
     
     if (!palabra_min) {
@@ -46,13 +44,12 @@ void verificar_palabra(char *palabra) {
         exit(1);
     }
     
-    /* Convertir a minúsculas para comparación sin distinción */
+    
     for (i = 0; i < longitud; i++) {
         palabra_min[i] = tolower(palabra[i]);
     }
     palabra_min[longitud] = '\0';
     
-    /* Verificar prefijos y sufijos */
     if (strncmp(palabra_min, "ni", 2) == 0) palabras_con_ni++;
     if (strncmp(palabra_min, "núm", 3) == 0) palabras_con_num++;
     
