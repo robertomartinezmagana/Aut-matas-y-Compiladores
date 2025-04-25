@@ -1,1 +1,14 @@
+Ejemplos válidos
+
+3 + 5
+10 - 2
+6 * 4
+20 / 5
+
+Ejemplos no válidos que dan SYNTAX ERROR
+
++ 8
+7 /
+* 3 5
+10 / 0
 
