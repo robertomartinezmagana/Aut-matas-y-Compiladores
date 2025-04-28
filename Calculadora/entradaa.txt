@@ -1,0 +1,14 @@
+-- EJEMPLOS CORRECTOS
+
+3 + 5
+10 - 2
+6 * 4
+20 / 5
+
+
+-- EJEMPLOS CON ERROR DE SINTAXIS
+
++ 8
+7 /
+* 3 5
+10 / 0
