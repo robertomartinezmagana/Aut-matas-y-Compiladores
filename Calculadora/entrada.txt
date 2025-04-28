@@ -1,14 +1,13 @@
-Ejemplos válidos
+-- EJEMPLOS CORRECTOS
 
-3 + 5
-10 - 2
-6 * 4
-20 / 5
+select * from alumnos where edad > 20
+select nombre,apellido from empleados where id = 10 and edad < 30
+delete from productos where precio < 100
+insert clientes
 
-Ejemplos no válidos que dan SYNTAX ERROR
+-- EJEMPLOS CON ERROR DE SINTAXIS
 
-+ 8
-7 /
-* 3 5
-10 / 0
-
+select nombre apellido from empleados where id = 10   -- falta la coma entre nombre y apellido
+select * from where edad > 20                         -- falta el nombre de la tabla
+delete productos where precio < 100                   -- falta la palabra FROM
+insert into clientes                                  -- "into" no está reconocido, solo "insert"
